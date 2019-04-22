@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+    const mysql = require('mysql');
 const express = require('express');
 var app = express();
 const bodyparser = require('body-parser');
@@ -8,7 +8,7 @@ app.use(bodyparser.json());
 var mysqlConnection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '1234',
+    password: '',
     database: 'EmployeeDB',
     multipleStatements: true
 });
@@ -21,7 +21,7 @@ mysqlConnection.connect((err) => {
 });
 
 
-app.listen(3000, () => console.log('Express server is runnig at port no : 3000'));
+app.listen(8888, () => console.log('Express server is runnig at port no : 8888'));
 
 
 //Get all employees
@@ -54,30 +54,34 @@ app.delete('/employees/:id', (req, res) => {
     })
 });
 
-//Insert an employees
+// insert an employess
 app.post('/employees', (req, res) => {
-    let emp = req.body;
-    var sql = "SET @EmpID = ?;SET @Name = ?;SET @EmpCode = ?;SET @Salary = ?; \
-    CALL EmployeeAddOrEdit(@EmpID,@Name,@EmpCode,@Salary);";
-    mysqlConnection.query(sql, [emp.EmpID, emp.Name, emp.EmpCode, emp.Salary], (err, rows, fields) => {
+   	// res.send(req.body);
+    let Name = req.body.Name;
+    let EmpCode = req.body.EmpCode;
+    let Salary = req.body.Salary;
+    var sql = "INSERT INTO Employee (Name, EmpCode, Salary) VALUES (?, ?, ?)";
+    mysqlConnection.query(sql, [Name, EmpCode, Salary], (err, rows, fields) => {
         if (!err)
-            rows.forEach(element => {
-                if(element.constructor == Array)
-                res.send('Inserted employee id : '+element[0].EmpID);
-            });
-        else
+            res.send('successfully added');
+        else 
             console.log(err);
     })
 });
 
-//Update an employees
+// update an employess
 app.put('/employees', (req, res) => {
-    let emp = req.body;
-    var sql = "SET @EmpID = ?;SET @Name = ?;SET @EmpCode = ?;SET @Salary = ?; \
-    CALL EmployeeAddOrEdit(@EmpID,@Name,@EmpCode,@Salary);";
-    mysqlConnection.query(sql, [emp.EmpID, emp.Name, emp.EmpCode, emp.Salary], (err, rows, fields) => {
+   	// res.send(req.body);
+    let EmpId = req.body.EmpId;
+    let Name = req.body.Name;
+    let EmpCode = req.body.EmpCode;
+    let Salary = req.body.Salary;
+    var sql = "UPDATE Employee SET Name = ?, EmpCode = ?, Salary = ? WHERE EmpId = ?";
+
+    // var sql = "INSERT INTO Employee (Name, EmpCode, Salary) VALUES (?, ?, ?)";
+    mysqlConnection.query(sql, [Name, EmpCode, Salary, EmpId], (err, rows, fields) => {
         if (!err)
-            res.send('Updated successfully');
+            res.send('successfully updated');
         else
             console.log(err);
     })
